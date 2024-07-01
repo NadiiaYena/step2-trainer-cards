@@ -242,7 +242,7 @@ const DATA = [
       "Олена є відомим тренером у жіночому бойовому клубі. Вона вивчила різні техніки самооборони. Її підхід дозволяє її ученицям відчувати себе впевнено в будь-яких ситуаціях.",
   },
 ];
-const data = [...DATA];
+const dataCopy = [...DATA];
 const containerCards = document.querySelector(".trainers-cards__container");
 const sortButtons = document.querySelectorAll(".sorting__btn");
 const categoriesForFilter = document.querySelectorAll(".filters__fieldset");
@@ -354,6 +354,7 @@ window.addEventListener("load", () => {
 
   function sortData() {
     const fitredData = checkFiltr();
+    console.log('fitredData', fitredData)
 
     if (sortButton === "ЗА ПРІЗВИЩЕМ") {
       fitredData.sort((a, b) => a["last name"].localeCompare(b["last name"]));
@@ -364,6 +365,7 @@ window.addEventListener("load", () => {
       );
       showCards(fitredData);
     } else {
+        console.log('sortData ЗА ЗАМОВЧУВАННЯМ')
       showCards(fitredData);
     }
   }
@@ -388,15 +390,14 @@ window.addEventListener("load", () => {
   }
 
   const filtrButton = document.querySelector(".filters__submit");
-  filtrButton.addEventListener("click", sortData);
+  filtrButton.addEventListener("click", handleClickFilterCards);
 
-//   function handleClickFilterCards(e) {
-//     console.log("handleClickFilterCards");
-//     e.preventDefault();
-//     //   console.log(e.target);
-//     const filterData = checkFiltr();
-//     showCards(filterData);
-//   }
+  function handleClickFilterCards(e) {
+    console.log("handleClickFilterCards");
+    e.preventDefault();
+    //   console.log(e.target);
+    sortData()
+  }
 
   function checkFiltr() {
     console.log("checkFiltr");
@@ -417,20 +418,21 @@ window.addEventListener("load", () => {
         filtr.category = radioLabel.trim();
       }
     });
-
+    const newData = [...DATA]
     if (filtr.category === "ВСІ" && filtr.direction === "ВСІ") {
-      console.log("checkFiltr Alllll", DATA);
-      return DATA;
+      console.log("checkFiltr Alllll", newData);
+      return newData;
     } else {
-      const dataFiltr = data.filter((item) => {
+      const dataFiltr = dataCopy.filter((item) => {
         if (filtr.category === "ВСІ") {
         //   console.log('category === "ВСІ"');
           return item.specialization.toUpperCase() === filtr.direction;
-        } else if (filtr.direction === "ВСІ") {
+        } else if (filtr.direction === "ВСІ" ) {
         //   console.log('direction === "ВСІ"');
           return item.category.toUpperCase() === filtr.category;
-        } else {
-          console.log("ВСІ ВСІ");
+        } 
+        else {
+          console.log(" неВСІ неВСІ");
           return (
             item.category.toUpperCase() === filtr.category &&
             item.specialization.toUpperCase() === filtr.direction
@@ -447,7 +449,7 @@ window.addEventListener("load", () => {
   //відсортувати дані фільтра
 
   function showCards(data) {
-    console.log("showCards", data);
+    // console.log("showCards", data);
     containerCards.innerHTML = "";
     data.forEach((item, index) => {
       const li = document.createElement("li");
