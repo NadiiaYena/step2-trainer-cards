@@ -260,18 +260,38 @@ let filtr = {
     ? sessionStorage.getItem("category")
     : "ВСІ",
 };
-console.log("filtr", filtr, "sortButton", sortButton);
+// console.log("filtr", filtr, "sortButton", sortButton);
+// preloader create
+const preloader = document.createElement("div");
+preloader.classList.add("load", "hidden");
+preloader.setAttribute('id', 'preloader')
+const hr = document.createElement("hr");
+const hr1 = document.createElement("hr");
+const hr2 = document.createElement("hr");
+const hr3 = document.createElement("hr");
 
+preloader.append(hr);
+preloader.append(hr1);
+preloader.append(hr2);
+preloader.append(hr3);
+
+document.body.prepend(preloader);
+
+//====
 window.addEventListener("load", () => {
+    console.log('window.addEventListener("load")')
+    // startPreloader()
+    // containerCards.classList.add('hidden')
+
   if (sessionStorage.length > 0) {
-    console.log("load");
+    console.log("load session store");
 
     sortButtons.forEach((item) => {
       if (sessionStorage.getItem("sortButton")) {
-        console.log(sessionStorage.getItem("sortButton"));
-        console.log(item.textContent);
+        // console.log(sessionStorage.getItem("sortButton"));
+        // console.log(item.textContent);
         const textConentButton = item.textContent.toUpperCase().trim();
-        console.log("textConentButton", textConentButton);
+        // console.log("textConentButton", textConentButton);
         if (textConentButton === sessionStorage.getItem("sortButton")) {
           item.classList.add("sorting__btn--active");
         } else {
@@ -330,7 +350,7 @@ window.addEventListener("load", () => {
 
     sortButtons.forEach((item) => {
       if (item.classList.contains("sorting__btn--active")) {
-        console.log(sortButton, item)
+        console.log(sortButton, item);
         sortData();
       }
     });
@@ -350,11 +370,11 @@ window.addEventListener("load", () => {
     });
     return value;
   }
-//   getSortbutton();
+  //   getSortbutton();
 
   function sortData() {
     const fitredData = checkFiltr();
-    console.log('fitredData', fitredData)
+    console.log("fitredData", fitredData);
 
     if (sortButton === "ЗА ПРІЗВИЩЕМ") {
       fitredData.sort((a, b) => a["last name"].localeCompare(b["last name"]));
@@ -365,27 +385,34 @@ window.addEventListener("load", () => {
       );
       showCards(fitredData);
     } else {
-        console.log('sortData ЗА ЗАМОВЧУВАННЯМ')
+      console.log("sortData ЗА ЗАМОВЧУВАННЯМ");
       showCards(fitredData);
     }
   }
-  sortButtons.forEach((item) => {
-    item.addEventListener("click", handleClickSortCards);
-  });
+  document.querySelector('.sorting').addEventListener('click', handleClickSortCards)
+//   sortButtons.forEach((item) => {
+//     item.addEventListener("click", handleClickSortCards);
+//   });
 
   function handleClickSortCards(e) {
-    console.log("handleClickSortCards");
+    console.log("handleClickSortCards", e);
     const button = e.target;
-    sortButtons.forEach((item) => {
-      if (button === item) {
-        item.classList.add("sorting__btn--active");
-      } else {
-        item.classList.remove("sorting__btn--active");
-      }
-    });
-    sortButton = getSortbutton();
-    console.log('sortButton', sortButton)
-    sortData();
+    if(button.tagName === "BUTTON" ) {
+        sortButtons.forEach((item) => {
+            if (button === item) {
+              item.classList.add("sorting__btn--active");
+            } else {
+              item.classList.remove("sorting__btn--active");
+            }
+          });
+          sortButton = getSortbutton();
+          console.log("sortButton", sortButton);
+          sortData();
+      
+        }
+        else {
+            return
+        }
 
   }
 
@@ -393,10 +420,12 @@ window.addEventListener("load", () => {
   filtrButton.addEventListener("click", handleClickFilterCards);
 
   function handleClickFilterCards(e) {
+    containerCards.classList.add('hidden');
+    startPreloader();
+
     console.log("handleClickFilterCards");
     e.preventDefault();
-    //   console.log(e.target);
-    sortData()
+    sortData();
   }
 
   function checkFiltr() {
@@ -418,20 +447,19 @@ window.addEventListener("load", () => {
         filtr.category = radioLabel.trim();
       }
     });
-    const newData = [...DATA]
+    const newData = [...DATA];
     if (filtr.category === "ВСІ" && filtr.direction === "ВСІ") {
       console.log("checkFiltr Alllll", newData);
       return newData;
     } else {
       const dataFiltr = dataCopy.filter((item) => {
         if (filtr.category === "ВСІ") {
-        //   console.log('category === "ВСІ"');
+          //   console.log('category === "ВСІ"');
           return item.specialization.toUpperCase() === filtr.direction;
-        } else if (filtr.direction === "ВСІ" ) {
-        //   console.log('direction === "ВСІ"');
+        } else if (filtr.direction === "ВСІ") {
+          //   console.log('direction === "ВСІ"');
           return item.category.toUpperCase() === filtr.category;
-        } 
-        else {
+        } else {
           console.log(" неВСІ неВСІ");
           return (
             item.category.toUpperCase() === filtr.category &&
@@ -449,6 +477,10 @@ window.addEventListener("load", () => {
   //відсортувати дані фільтра
 
   function showCards(data) {
+    console.log('showCards')
+    containerCards.classList.add('hidden');
+    startPreloader();
+    let imagesLoaded = 0;
     // console.log("showCards", data);
     containerCards.innerHTML = "";
     data.forEach((item, index) => {
@@ -459,8 +491,26 @@ window.addEventListener("load", () => {
       image.setAttribute("src", `${item.photo}`);
       image.setAttribute("alt", `trainer ${item["first name"]}`);
       image.classList.add("trainer__img");
+
+
       image.style.height = "300px";
       image.style.width = "280px";
+
+      image.onload = function() {
+        console.log('image.onload')
+        imagesLoaded++;
+        
+        image.style.display = 'block';
+        if (imagesLoaded === data.length) {
+            stopPreloader(); 
+            containerCards.classList.remove('hidden')
+        }
+    };
+
+    image.onerror = function() {
+        stopPreloader();
+        console.error('Error load image');
+    };
 
       const p = document.createElement("p");
       p.classList.add("trainer__name");
@@ -477,6 +527,7 @@ window.addEventListener("load", () => {
       containerCards.append(li);
     });
     activModal();
+
   }
 
   function activModal() {
@@ -564,10 +615,54 @@ window.addEventListener("load", () => {
       }
     }
   }
-  window.addEventListener("beforeunload", () => {
+
+});
+
+window.addEventListener("beforeunload", () => {
     console.log("beforeunload");
     sessionStorage.setItem("direction", filtr.direction);
     sessionStorage.setItem("category", filtr.category);
     sessionStorage.setItem("sortButton", sortButton);
   });
-});
+
+// preloader
+function startPreloader() {
+    console.log('startPreloader')
+  document.getElementById("preloader").classList.remove("hidden");
+}
+
+function stopPreloader() {
+    console.log('stopPreloader')
+  document.getElementById("preloader").classList.add("hidden");
+}
+
+// document.addEventListener('readystatechange' ,()=>{
+//     console.log('readystatechange', document.readyState)
+//     if(document.readyState === 'interactive') {
+//         startPreloader()
+//     } else if(document.readyState === 'complete') {
+//         stopPreloader()
+//     }
+
+// })
+// document.addEventListener("DOMContentLoaded", function() {
+// //     // const loader = document.getElementById('preloader');
+// startPreloader()
+// const images = document.querySelectorAll('img');
+// let imagesLoaded = 0;
+// images.forEach((img) => {
+//     img.addEventListener('load', () => {
+//         imagesLoaded++;
+//         if (imagesLoaded === images.length) {
+//             console.log('DOMContentLoaded')
+//             stopPreloader()
+//         }
+//     });
+//     img.addEventListener('error', () => {
+//         imagesLoaded++;
+//         if (imagesLoaded === images.length) {
+//             stopPreloader()
+//         }
+//     });
+// });
+// });
