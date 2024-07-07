@@ -1,6 +1,6 @@
 # Page for viewing the coaches' cards.
 
-Here you can open the [Page](https://nadiiayena.github.io/step2-trainer-cards/)
+Here you can open the <a href="https://nadiiayena.github.io/step2-trainer-cards/" target="_blank">Page</a>
 
 ## Description
 The functionality of the trainer viewing page has been created using javascript
