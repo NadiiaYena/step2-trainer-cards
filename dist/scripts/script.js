@@ -496,12 +496,12 @@ window.addEventListener("load", () => {
       clone.querySelector(
         ".trainer__name"
       ).textContent = `${item["last name"]} ${item["first name"]}`;
-      clone.querySelector(".trainer__img").setAttribute("src", `${item.photo}`);
-      clone
-        .querySelector(".trainer__img")
-        .setAttribute("alt", `trainer ${item["first name"]}`);
 
       const image = clone.querySelector(".trainer__img");
+      image.setAttribute("src", `${item.photo}`);
+      image.setAttribute("alt", `trainer ${item["first name"]}`);
+      image.style.height = "300px";
+      image.style.width = "280px";
       image.onload = function () {
         console.log("image.onload");
         imagesLoaded++;
