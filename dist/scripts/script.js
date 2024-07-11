@@ -243,6 +243,8 @@ const DATA = [
   },
 ];
 const dataCopy = [...DATA];
+const sortingSection = document.querySelector('.sorting');
+const filterSection = document.querySelector('.sidebar')
 const containerCards = document.querySelector(".trainers-cards__container");
 const sortButtons = document.querySelectorAll(".sorting__btn");
 const categoriesForFilter = document.querySelectorAll(".filters__fieldset");
@@ -503,7 +505,10 @@ window.addEventListener("load", () => {
         image.style.display = 'block';
         if (imagesLoaded === data.length) {
             stopPreloader(); 
-            containerCards.classList.remove('hidden')
+            containerCards.classList.remove('hidden');
+            sortingSection.removeAttribute('hidden');
+            filterSection.removeAttribute('hidden');
+
         }
     };
 
