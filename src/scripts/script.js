@@ -243,6 +243,8 @@ const DATA = [
   },
 ];
 const dataCopy = [...DATA];
+const sortingSection = document.querySelector(".sorting");
+const filterSection = document.querySelector(".sidebar");
 const containerCards = document.querySelector(".trainers-cards__container");
 const sortButtons = document.querySelectorAll(".sorting__btn");
 const categoriesForFilter = document.querySelectorAll(".filters__fieldset");
@@ -264,7 +266,7 @@ let filtr = {
 // preloader create
 const preloader = document.createElement("div");
 preloader.classList.add("load", "hidden");
-preloader.setAttribute('id', 'preloader')
+preloader.setAttribute("id", "preloader");
 const hr = document.createElement("hr");
 const hr1 = document.createElement("hr");
 const hr2 = document.createElement("hr");
@@ -279,9 +281,9 @@ document.body.prepend(preloader);
 
 //====
 window.addEventListener("load", () => {
-    console.log('window.addEventListener("load")')
-    // startPreloader()
-    // containerCards.classList.add('hidden')
+  console.log('window.addEventListener("load")');
+  // startPreloader()
+  // containerCards.classList.add('hidden')
 
   if (sessionStorage.length > 0) {
     console.log("load session store");
@@ -330,7 +332,7 @@ window.addEventListener("load", () => {
       if (sessionStorage.getItem("category")) {
         // console.log(item);
         const radioLabel = document.querySelector(`label[for="${item.id}"]`);
-        // console.log(radioLabel);
+     // console.log(radioLabel);
         if (radioLabel) {
           const textLabel = radioLabel.textContent.trim();
           //   console.log(radioLabel);
@@ -389,38 +391,42 @@ window.addEventListener("load", () => {
       showCards(fitredData);
     }
   }
-  document.querySelector('.sorting').addEventListener('click', handleClickSortCards)
-//   sortButtons.forEach((item) => {
-//     item.addEventListener("click", handleClickSortCards);
-//   });
+  document
+    .querySelector(".sorting")
+    .addEventListener("click", handleClickSortCards);
+  //   sortButtons.forEach((item) => {
+  //     item.addEventListener("click", handleClickSortCards);
+  //   });
 
   function handleClickSortCards(e) {
     console.log("handleClickSortCards", e);
-    const button = e.target;
-    if(button.tagName === "BUTTON" ) {
-        sortButtons.forEach((item) => {
-            if (button === item) {
-              item.classList.add("sorting__btn--active");
-            } else {
-              item.classList.remove("sorting__btn--active");
-            }
-          });
-          sortButton = getSortbutton();
-          console.log("sortButton", sortButton);
-          sortData();
-      
-        }
-        else {
-            return
-        }
+    sortingSection.setAttribute("hidden", "true");
+    filterSection.setAttribute("hidden", "true");
 
+    const button = e.target;
+    if (button.tagName === "BUTTON") {
+      sortButtons.forEach((item) => {
+        if (button === item) {
+          item.classList.add("sorting__btn--active");
+        } else {
+          item.classList.remove("sorting__btn--active");
+        }
+      });
+      sortButton = getSortbutton();
+      console.log("sortButton", sortButton);
+      sortData();
+    } else {
+      return;
+    }
   }
 
   const filtrButton = document.querySelector(".filters__submit");
   filtrButton.addEventListener("click", handleClickFilterCards);
 
   function handleClickFilterCards(e) {
-    containerCards.classList.add('hidden');
+    containerCards.classList.add("hidden");
+    sortingSection.setAttribute("hidden", "true");
+    filterSection.setAttribute("hidden", "true");
     startPreloader();
 
     console.log("handleClickFilterCards");
@@ -477,57 +483,46 @@ window.addEventListener("load", () => {
   //відсортувати дані фільтра
 
   function showCards(data) {
-    console.log('showCards')
-    containerCards.classList.add('hidden');
+    console.log("showCards");
+    containerCards.classList.add("hidden");
     startPreloader();
     let imagesLoaded = 0;
     // console.log("showCards", data);
     containerCards.innerHTML = "";
-    data.forEach((item, index) => {
-      const li = document.createElement("li");
-      li.classList.add("trainer");
-      li.setAttribute("key", index);
-      const image = document.createElement("img");
+
+    const template = document.getElementById("trainer-card");
+    data.forEach((item) => {
+      const clone = document.importNode(template.content, true);
+      clone.querySelector(
+        ".trainer__name"
+      ).textContent = `${item["last name"]} ${item["first name"]}`;
+
+      const image = clone.querySelector(".trainer__img");
       image.setAttribute("src", `${item.photo}`);
       image.setAttribute("alt", `trainer ${item["first name"]}`);
-      image.classList.add("trainer__img");
-
-
       image.style.height = "300px";
       image.style.width = "280px";
-
-      image.onload = function() {
-        console.log('image.onload')
+      image.onload = function () {
+        console.log("image.onload");
         imagesLoaded++;
-        
-        image.style.display = 'block';
+
+        image.style.display = "block";
         if (imagesLoaded === data.length) {
-            stopPreloader(); 
-            containerCards.classList.remove('hidden')
+          stopPreloader();
+          containerCards.classList.remove("hidden");
+          sortingSection.removeAttribute("hidden");
+          filterSection.removeAttribute("hidden");
         }
-    };
+      };
 
-    image.onerror = function() {
+      image.onerror = function () {
         stopPreloader();
-        console.error('Error load image');
-    };
+        console.error("Error load image");
+      };
 
-      const p = document.createElement("p");
-      p.classList.add("trainer__name");
-      p.textContent = `${item["last name"]} ${item["first name"]}`;
-
-      const button = document.createElement("button");
-      button.classList.add("trainer__show-more");
-      button.setAttribute("type", "button");
-      button.textContent = "ПОКАЗАТИ";
-
-      li.append(image);
-      li.append(p);
-      li.append(button);
-      containerCards.append(li);
+      containerCards.appendChild(clone);
     });
     activModal();
-
   }
 
   function activModal() {
@@ -555,84 +550,43 @@ window.addEventListener("load", () => {
     }
 
     function createModal(item) {
-      const modal = document.createElement("div");
-      modal.classList.add("modal");
-      const modalBody = document.createElement("div");
-      modalBody.classList.add("modal__body");
-
-      const image = document.createElement("img");
-      image.classList.add("modal__img");
-      image.setAttribute("src", item.photo);
-
-      const modalDescription = document.createElement("div");
-      modalDescription.classList.add("modal__description");
-
-      const modalName = document.createElement("p");
-      modalName.classList.add("modal__name");
-      modalName.textContent = `${item["last name"]} ${item["first name"]}`;
-
-      const category = document.createElement("p");
-      category.classList.add("modal__point", "modal__point--category");
-      category.textContent = `Категорія: ${item.category}`;
-
-      const experience = document.createElement("p");
-      experience.classList.add("modal__point", "modal__point--experience");
-      experience.textContent = `Досвід: ${item.experience}`;
-
-      const specialization = document.createElement("p");
-      specialization.classList.add(
-        "modal__point",
-        "modal__point--specialization"
-      );
-      specialization.textContent = `Напрям тренера: ${item.specialization}`;
-
-      const text = document.createElement("p");
-      text.classList.add("modal__text");
-      text.textContent = item.description;
-
-      const buttonClose = document.createElement("button");
-      buttonClose.classList.add("modal__close");
+        const template = document.getElementById("modal-template");
+        const clone = document.importNode(template.content, true);
+      clone.querySelector('.modal__img').setAttribute("src", item.photo);
+      clone.querySelector('.modal__name').textContent = `${item["last name"]} ${item["first name"]}`;
+      clone.querySelector('.modal__point--category').textContent = `Категорія: ${item.category}`;
+      clone.querySelector('.modal__point--experience').textContent = `Досвід: ${item.experience}`;
+      clone.querySelector('.modal__point--specialization').textContent = `Напрям тренера: ${item.specialization}`;
+      clone.querySelector('.modal__text').textContent = item.description;
+      const buttonClose = clone.querySelector(".modal__close");
       buttonClose.addEventListener("click", closeModalWindow);
-      buttonClose.innerHTML =
-        '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 72 72"><path d="M 19 15 C 17.977 15 16.951875 15.390875 16.171875 16.171875 C 14.609875 17.733875 14.609875 20.266125 16.171875 21.828125 L 30.34375 36 L 16.171875 50.171875 C 14.609875 51.733875 14.609875 54.266125 16.171875 55.828125 C 16.951875 56.608125 17.977 57 19 57 C 20.023 57 21.048125 56.609125 21.828125 55.828125 L 36 41.65625 L 50.171875 55.828125 C 51.731875 57.390125 54.267125 57.390125 55.828125 55.828125 C 57.391125 54.265125 57.391125 51.734875 55.828125 50.171875 L 41.65625 36 L 55.828125 21.828125 C 57.390125 20.266125 57.390125 17.733875 55.828125 16.171875 C 54.268125 14.610875 51.731875 14.609875 50.171875 16.171875 L 36 30.34375 L 21.828125 16.171875 C 21.048125 15.391875 20.023 15 19 15 z"></path></svg>';
 
-      modalDescription.append(modalName);
-      modalDescription.append(category);
-      modalDescription.append(experience);
-      modalDescription.append(specialization);
-      modalDescription.append(text);
-
-      modalBody.append(buttonClose);
-      modalBody.append(image);
-      modalBody.append(modalDescription);
-
-      modal.append(modalBody);
-      document.body.prepend(modal);
+      document.body.appendChild(clone);
 
       function closeModalWindow() {
-        modal.remove();
+        // console.log('remove')
+        document.querySelector('.modal').remove();
         document.body.style.overflow = "";
       }
     }
   }
-
 });
 
 window.addEventListener("beforeunload", () => {
-    console.log("beforeunload");
-    sessionStorage.setItem("direction", filtr.direction);
-    sessionStorage.setItem("category", filtr.category);
-    sessionStorage.setItem("sortButton", sortButton);
-  });
+  console.log("beforeunload");
+  sessionStorage.setItem("direction", filtr.direction);
+  sessionStorage.setItem("category", filtr.category);
+  sessionStorage.setItem("sortButton", sortButton);
+});
 
 // preloader
 function startPreloader() {
-    console.log('startPreloader')
+  console.log("startPreloader");
   document.getElementById("preloader").classList.remove("hidden");
 }
 
 function stopPreloader() {
-    console.log('stopPreloader')
+  console.log("stopPreloader");
   document.getElementById("preloader").classList.add("hidden");
 }
 
