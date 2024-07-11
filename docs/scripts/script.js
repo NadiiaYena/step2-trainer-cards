@@ -397,7 +397,11 @@ window.addEventListener("load", () => {
 //   });
 
   function handleClickSortCards(e) {
+
     console.log("handleClickSortCards", e);
+    sortingSection.setAttribute('hidden', 'true');
+    filterSection.setAttribute('hidden', 'true')
+
     const button = e.target;
     if(button.tagName === "BUTTON" ) {
         sortButtons.forEach((item) => {
@@ -423,6 +427,8 @@ window.addEventListener("load", () => {
 
   function handleClickFilterCards(e) {
     containerCards.classList.add('hidden');
+    sortingSection.setAttribute('hidden', 'true');
+    filterSection.setAttribute('hidden', 'true')
     startPreloader();
 
     console.log("handleClickFilterCards");
