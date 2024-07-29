@@ -401,11 +401,12 @@ window.addEventListener("load", () => {
 
   function handleClickSortCards(e) {
     console.log("handleClickSortCards", e);
-    sortingSection.setAttribute("hidden", "true");
-    filterSection.setAttribute("hidden", "true");
 
     const button = e.target;
     if (button.tagName === "BUTTON") {
+        sortingSection.setAttribute("hidden", "true");
+        filterSection.setAttribute("hidden", "true");
+    
       sortButtons.forEach((item) => {
         if (button === item) {
           item.classList.add("sorting__btn--active");
