@@ -262,6 +262,7 @@ let filtr = {
     ? sessionStorage.getItem("category")
     : "ВСІ",
 };
+
 // console.log("filtr", filtr, "sortButton", sortButton);
 // preloader create
 const preloader = document.createElement("div");
@@ -431,28 +432,31 @@ window.addEventListener("load", () => {
 
     console.log("handleClickFilterCards");
     e.preventDefault();
+
+    directions.forEach((item) => {
+        if (item.checked) {
+          const radioLabel = document.querySelector(
+            `label[for="${item.id}"]`
+          ).textContent;
+          filtr.direction = radioLabel.trim();
+        }
+      });
+      categories.forEach((item) => {
+        if (item.checked) {
+          const radioLabel = document.querySelector(
+            `label[for="${item.id}"]`
+          ).textContent;
+          filtr.category = radioLabel.trim();
+        }
+      });
+  
+
     sortData();
   }
 
   function checkFiltr() {
     console.log("checkFiltr");
 
-    directions.forEach((item) => {
-      if (item.checked) {
-        const radioLabel = document.querySelector(
-          `label[for="${item.id}"]`
-        ).textContent;
-        filtr.direction = radioLabel.trim();
-      }
-    });
-    categories.forEach((item) => {
-      if (item.checked) {
-        const radioLabel = document.querySelector(
-          `label[for="${item.id}"]`
-        ).textContent;
-        filtr.category = radioLabel.trim();
-      }
-    });
     const newData = [...DATA];
     if (filtr.category === "ВСІ" && filtr.direction === "ВСІ") {
       console.log("checkFiltr Alllll", newData);
@@ -493,7 +497,7 @@ window.addEventListener("load", () => {
     const template = document.getElementById("trainer-card");
     data.forEach((item) => {
       const clone = document.importNode(template.content, true);
-      clone.querySelector(
+      clone.querySelector( 
         ".trainer__name"
       ).textContent = `${item["last name"]} ${item["first name"]}`;
 
